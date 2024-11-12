@@ -13,10 +13,15 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
  # make background
 background = build_background(WIDTH,HEIGHT)
 
+# make a sprite group
+astronaut_group = pygame.sprite.Group()
 
 # make player1 
-astronaut1 = Astronaut(WIDTH/2,HEIGHT/2)
-astronaut1.draw(screen)
+astronaut1 = Astronaut(WIDTH/2,HEIGHT/2, WIDTH, HEIGHT)
+
+# add player1 to group
+astronaut_group.add(astronaut1) 
+
 
 
 
@@ -28,31 +33,21 @@ while running:
             running = False
         if event.type == pygame.QUIT:
             running = False
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_RIGHT]:
-        astronaut1.theta -= 90
-        pygame.time.delay(100)
-    if keys[pygame.K_LEFT]:
-        astronaut1.theta += 90
-        pygame.time.delay(100)
-    if keys[pygame.K_UP]:
-        astronaut1.x += 1
-        pygame.time.delay(100)
-    if keys[pygame.K_DOWN]:
-        astronaut1.x -= 1
-        pygame.time.delay(100)
-
-    # update the astronaut's position
-    astronaut1.update()
-
+    
     # Blit the background to the screen
     background = build_background(WIDTH,HEIGHT)
     screen.blit(background,(0,0))
 
-    # draw the astronaut
-    astronaut1.draw(screen)
+    # update the astronaut's position
+    astronaut_group.update()
 
-    # RENDER YOUR GAME HERE
+    # draw the ship
+    astronaut_group.draw(screen)
+    
+
+    
+
+
 
     # flip() the display to put your work on screen
     pygame.display.flip()
