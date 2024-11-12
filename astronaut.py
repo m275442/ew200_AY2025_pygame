@@ -14,11 +14,14 @@ class Astronaut(pygame.sprite.Sprite):
         self.color = color
         if color == 'black':
             self.orig_image = pygame.image.load('assets/spaceAstronauts_004.png')
+            self.orig_image2 = pygame.image.load('assets/spaceAstronauts_005.png') # image with hands out
         else:
             self.orig_image = pygame.image.load('assets/spaceAstronauts_007.png')
+            self.orig_image2 = pygame.image.load('assets/spaceAstronauts_008.png')
         self.image = self.orig_image # keep orig image to never be rotated
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.counter = 0
     
     def deg_to_rad(self, deg):
         # converts deg to rad
@@ -27,6 +30,7 @@ class Astronaut(pygame.sprite.Sprite):
     
     def check_keys(self):
         keys = pygame.key.get_pressed()
+        self.is_moving = False
 
         # Convert angle to radians (pygame uses degrees, but math functions use radians)
         # Note: Adding 90 degrees (or pi/2 radians) aligns the "forward" movement to start facing right
@@ -41,19 +45,23 @@ class Astronaut(pygame.sprite.Sprite):
             # Move forward in the direction the sprite is facing
             self.x += speed * math.cos(angle_rad)
             self.y += speed * math.sin(angle_rad)
+            self.is_moving = True  # Set flag to True when moving
 
         if keys[pygame.K_DOWN]:
             # Move backward in the direction the sprite is facing
             self.x -= speed * math.cos(angle_rad)
             self.y -= speed * math.sin(angle_rad)
+            self.is_moving = True  # Set flag to True when moving
 
         if keys[pygame.K_RIGHT]:
             # Rotate clockwise (reduce the angle)
             self.theta += 5  # Adjust the increment as needed for smoother rotation
 
+
         if keys[pygame.K_LEFT]:
             # Rotate counterclockwise (increase the angle)
             self.theta -= 5
+    
 
     def check_border(self):
         # make sure our ship rect is inside of some rect we set
@@ -83,9 +91,18 @@ class Astronaut(pygame.sprite.Sprite):
         # Update rect's center to match the new (x, y) position
         self.rect.center = (self.x, self.y)
 
-        # Rotate the image based on the current angle (self.theta)
-        # Negative to match rotation direction in Pygame's coordinate system
-        self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 0.7)
+        # Change image only if the astronaut is moving
+        if self.is_moving:
+            if self.counter % 24 < 12:  # Toggle images to create walking effect
+                self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
+            else:
+                self.image = pygame.transform.rotozoom(self.orig_image2, -self.theta, 1)
+            self.counter += 1  # Increment the counter when moving
+        else:
+            # Reset image to the original when not moving
+            self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
+
+
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
         # check border
