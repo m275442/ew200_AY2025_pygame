@@ -3,12 +3,13 @@ import math
 from math import cos, sin, pi
 
 class Astronaut(pygame.sprite.Sprite):
-    def __init__(self,x,y, WIDTH, HEIGHT,theta=0,color='black'):
+    def __init__(self, screen, x,y, WIDTH, HEIGHT, bullet_group, theta=0,color='black'):
         pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
         self.screen_w = WIDTH
         self.screen_h = HEIGHT
+        self.screen = screen
         self.speed = 0
         self.theta = theta
         self.color = color
@@ -22,6 +23,7 @@ class Astronaut(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.counter = 0
+        self.bullet_group = bullet_group
     
     def deg_to_rad(self, deg):
         # converts deg to rad
@@ -80,13 +82,18 @@ class Astronaut(pygame.sprite.Sprite):
             if self.rect.bottom > self.screen_h:
                 self.rect.bottom = self.screen_h
                 self.y = self.rect.centery
-
+    
+    def track_player(self):
+        # This code is in my enemy ship class
+        pass
 
     def update(self):
 
         # Check keys only if the astronaut is influenced by key input
         if self.color == 'black':   
             self.check_keys()
+        else:
+            self.track_player()
 
         # Update rect's center to match the new (x, y) position
         self.rect.center = (self.x, self.y)
