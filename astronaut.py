@@ -17,6 +17,7 @@ class Astronaut(pygame.sprite.Sprite):
         if color == 'black':
             self.orig_image = pygame.image.load('assets/spaceAstronauts_004.png')
             self.orig_image2 = pygame.image.load('assets/spaceAstronauts_005.png') # image with hands out
+            self.orig_image3 = pygame.image.load('assets/spaceAstronauts_006.png') # shooting
         else:
             self.orig_image = pygame.image.load('assets/spaceAstronauts_007.png')
             self.orig_image2 = pygame.image.load('assets/spaceAstronauts_008.png')
@@ -36,6 +37,7 @@ class Astronaut(pygame.sprite.Sprite):
     def check_keys(self):
         keys = pygame.key.get_pressed()
         self.is_moving = False
+        self.is_shooting = False
 
         # Convert angle to radians (pygame uses degrees, but math functions use radians)
         # Note: Adding 90 degrees (or pi/2 radians) aligns the "forward" movement to start facing right
@@ -70,6 +72,7 @@ class Astronaut(pygame.sprite.Sprite):
         
         if keys[pygame.K_SPACE]:
             # activate shoot
+            self.is_shooting = True
             self.shoot()
     
 
@@ -123,6 +126,9 @@ class Astronaut(pygame.sprite.Sprite):
             else:
                 self.image = pygame.transform.rotozoom(self.orig_image2, -self.theta, 1)
             self.counter += 1  # Increment the counter when moving
+        # change image if astronaut is shooting
+        elif self.is_shooting:
+            self.image = pygame.transform.rotozoom(self.orig_image3, -self.theta, 1)
         else:
             # Reset image to the original when not moving
             self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
