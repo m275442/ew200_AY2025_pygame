@@ -48,8 +48,14 @@ while running:
     # update the astronaut's position
     astronaut_group.update()
 
+    # update bullet position
+    bullet_group.update()
+
     # draw the ship
     astronaut_group.draw(screen)
+
+    # draw bullets
+    bullet_group.draw(screen)
     
 
     

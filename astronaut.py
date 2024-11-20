@@ -1,5 +1,6 @@
 import pygame
 import math
+from bullet import Bullet
 from math import cos, sin, pi
 
 class Astronaut(pygame.sprite.Sprite):
@@ -24,6 +25,8 @@ class Astronaut(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.counter = 0
         self.bullet_group = bullet_group
+        self.shoot_time = 0 # this is to prevent continuous shooting
+        self.shoot_wait = 500 # wait ms before next shot
     
     def deg_to_rad(self, deg):
         # converts deg to rad
@@ -63,6 +66,11 @@ class Astronaut(pygame.sprite.Sprite):
         if keys[pygame.K_LEFT]:
             # Rotate counterclockwise (increase the angle)
             self.theta -= 5
+
+        
+        if keys[pygame.K_SPACE]:
+            # activate shoot
+            self.shoot()
     
 
     def check_border(self):
@@ -82,6 +90,16 @@ class Astronaut(pygame.sprite.Sprite):
             if self.rect.bottom > self.screen_h:
                 self.rect.bottom = self.screen_h
                 self.y = self.rect.centery
+
+    def shoot(self):
+        # only shoot if the time has elapsed
+        if pygame.time.get_ticks() - self.shoot_time > self.shoot_wait:
+            # we are allowed to shoot now
+            self.shoot_time = pygame.time.get_ticks()
+            # if we have waited long enough, then make bullet
+            b = Bullet(self.screen, self, self.x, self.y, self.theta)
+            # put the bullet in a group
+            self.bullet_group.add(b)
     
     def track_player(self):
         # This code is in my enemy ship class

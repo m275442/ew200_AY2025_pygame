@@ -2,6 +2,7 @@ import pygame
 from math import sin, cos, radians
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, screen, mom, x,y,theta,speed = 5):
+        super().__init__() 
         self.screen = screen
         self.x = x
         self.y = y
@@ -20,7 +21,7 @@ class Bullet(pygame.sprite.Sprite):
         dy = self.speed * sin(radians(self.theta))
         
         self.x += dx
-        self.y -= dy
+        self.y += dy
         # update the rect
         self.rect.center = (self.x,self.y)
 
