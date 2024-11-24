@@ -1,7 +1,7 @@
 import pygame
 import math
 from bullet import Bullet
-from math import cos, sin, pi
+from math import cos, sin, pi, radians
 
 class Astronaut(pygame.sprite.Sprite):
     def __init__(self, screen, x,y, WIDTH, HEIGHT, bullet_group, theta=0,color='black'):
@@ -26,8 +26,11 @@ class Astronaut(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.counter = 0
         self.bullet_group = bullet_group
-        self.shoot_time = 0 # this is to prevent continuous shooting
-        self.shoot_wait = 500 # wait ms before next shot
+        # Shooting timers
+        self.shoot_time = 0
+        self.shoot_wait = 500  # Time between shots (ms)
+        self.shoot_duration = 200  # Duration of shooting animation (ms)
+        self.is_shooting = False
     
     def deg_to_rad(self, deg):
         # converts deg to rad
@@ -98,9 +101,26 @@ class Astronaut(pygame.sprite.Sprite):
         # only shoot if the time has elapsed
         if pygame.time.get_ticks() - self.shoot_time > self.shoot_wait:
             # we are allowed to shoot now
+            self.is_shooting = True
             self.shoot_time = pygame.time.get_ticks()
+            
             # if we have waited long enough, then make bullet
-            b = Bullet(self.screen, self, self.x, self.y, self.theta)
+
+            # offset so it shoots from astronaut gun 
+             # Offset the bullet's spawn position
+            offset_x = self.rect.width / 2  # Right edge of the sprite
+            offset_y = self.rect.height / 4  # Adjust to a point near the top
+
+            # Rotate the offsets based on the current rotation
+            angle_rad = radians(self.theta)
+            rotated_x = offset_x * cos(angle_rad) - offset_y * sin(angle_rad)
+            rotated_y = offset_x * sin(angle_rad) + offset_y * cos(angle_rad)
+
+            # Calculate the final bullet spawn position
+            bullet_x = self.x + rotated_x
+            bullet_y = self.y + rotated_y
+
+            b = Bullet(self.screen, self, bullet_x, bullet_y, self.theta)
             # put the bullet in a group
             self.bullet_group.add(b)
     
@@ -129,6 +149,9 @@ class Astronaut(pygame.sprite.Sprite):
         # change image if astronaut is shooting
         elif self.is_shooting:
             self.image = pygame.transform.rotozoom(self.orig_image3, -self.theta, 1)
+            if pygame.time.get_ticks() - self.shoot_time > self.shoot_duration:
+                self.is_shooting = False
+
         else:
             # Reset image to the original when not moving
             self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
