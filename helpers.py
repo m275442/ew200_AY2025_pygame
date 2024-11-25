@@ -1,4 +1,5 @@
 import pygame
+from random import randint
 
 def build_background(WIDTH, HEIGHT):
     # Load images
@@ -40,3 +41,26 @@ def build_background(WIDTH, HEIGHT):
     return background  # Return the constructed background surface
 
 background = build_background(1280,768)
+
+
+def kill_sprites(ship_group, bullet_group, score, num_ships):
+        # check for bullets hitting ships
+    coll_dict = pygame.sprite.groupcollide(ship_group,bullet_group,0,0)
+
+    # check and see if a bullet collides with something that is not its mother
+    for s,bs in coll_dict.items():
+        # ship is k, bullet list is v
+        # check for non empty values
+        if bs:
+            #loop over each bullet check its mom
+            for b in bs:
+                # check if bullet.mom is the player
+                if b.mom != s:
+                    # kill the astronaut
+                    s.kill()
+                    # kill the bullet
+                    b.kill()
+                    score[0] += 1
+                    # increase the number of spawned ships by chance
+                    if randint(0,10)<3:
+                        num_ships[0]+=1

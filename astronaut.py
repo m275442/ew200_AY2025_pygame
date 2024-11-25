@@ -19,8 +19,8 @@ class Astronaut(pygame.sprite.Sprite):
             self.orig_image2 = pygame.image.load('assets/spaceAstronauts_005.png') # image with hands out
             self.orig_image3 = pygame.image.load('assets/spaceAstronauts_006.png') # shooting
         else:
-            self.orig_image = pygame.image.load('assets/spaceAstronauts_007.png')
-            self.orig_image2 = pygame.image.load('assets/spaceAstronauts_008.png')
+            self.orig_image2 = pygame.image.load('assets/spaceAstronauts_007.png')
+            self.orig_image = pygame.image.load('assets/spaceAstronauts_008.png')
         self.image = self.orig_image # keep orig image to never be rotated
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -31,6 +31,12 @@ class Astronaut(pygame.sprite.Sprite):
         self.shoot_wait = 500  # Time between shots (ms)
         self.shoot_duration = 200  # Duration of shooting animation (ms)
         self.is_shooting = False
+        # explosion stuff
+        self.explosion_image = pygame.image.load('assets/explosion1.png')
+        self.explosion_image = pygame.transform.scale_by(self.explosion_image, 6)
+        self.explosion_timer = 0
+        self.explosion_length = 500
+        self.mask = pygame.mask.from_surface(self.image)
     
     def deg_to_rad(self, deg):
         # converts deg to rad
@@ -47,7 +53,7 @@ class Astronaut(pygame.sprite.Sprite):
         angle_rad = math.radians(self.theta)
 
         # Speed of movement
-        speed = 5
+        speed = 4
 
         # Check for input and update position based on the angle
         # Check for input and update position based on the angle
@@ -65,12 +71,12 @@ class Astronaut(pygame.sprite.Sprite):
 
         if keys[pygame.K_RIGHT]:
             # Rotate clockwise (reduce the angle)
-            self.theta += 5  # Adjust the increment as needed for smoother rotation
+            self.theta += 4  # Adjust the increment as needed for smoother rotation
 
 
         if keys[pygame.K_LEFT]:
             # Rotate counterclockwise (increase the angle)
-            self.theta -= 5
+            self.theta -= 4
 
         
         if keys[pygame.K_SPACE]:
@@ -139,21 +145,19 @@ class Astronaut(pygame.sprite.Sprite):
         # Update rect's center to match the new (x, y) position
         self.rect.center = (self.x, self.y)
 
-        # Change image only if the astronaut is moving
-        if self.is_moving:
-            if self.counter % 24 < 12:  # Toggle images to create walking effect
-                self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
-            else:
-                self.image = pygame.transform.rotozoom(self.orig_image2, -self.theta, 1)
-            self.counter += 1  # Increment the counter when moving
-        # change image if astronaut is shooting
-        elif self.is_shooting:
+        # Update image based on state
+        if self.is_shooting:
             self.image = pygame.transform.rotozoom(self.orig_image3, -self.theta, 1)
             if pygame.time.get_ticks() - self.shoot_time > self.shoot_duration:
                 self.is_shooting = False
-
+        elif self.is_moving:
+            if self.counter % 24 < 12:
+                self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
+            else:
+                self.image = pygame.transform.rotozoom(self.orig_image2, -self.theta, 1)
+            self.counter += 1
+        # Reset image to the original when not moving
         else:
-            # Reset image to the original when not moving
             self.image = pygame.transform.rotozoom(self.orig_image, -self.theta, 1)
 
 
@@ -162,8 +166,3 @@ class Astronaut(pygame.sprite.Sprite):
         # check border
         self.check_border()
 
-
-
-        
-
-        

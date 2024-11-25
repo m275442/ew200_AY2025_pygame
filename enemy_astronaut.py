@@ -20,7 +20,7 @@ class EnemyAstronaut(Astronaut):
         distance_squared = delta_x**2 + delta_y**2
         if distance_squared > 25:  # Chase if the player is more than 5 units away
             # Set the speed of the enemy astronaut
-            self.speed = .5  # Adjust the speed as needed
+            self.speed = .75  # Adjust the speed as needed
 
             # Calculate the angle to the player
             self.theta = degrees(atan2(delta_y, delta_x))  
