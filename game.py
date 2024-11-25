@@ -19,6 +19,12 @@ TILESIZE = grass.get_width()
 
 # make score
 score = [0]
+score_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf',48)
+
+# Render the score text
+def draw_score(screen, score):
+    score_text = score_font.render(f"Score: {score[0]}", True, (255, 50, 50))  # red color
+    screen.blit(score_text, (20, 20))  # Top-left corner of the screen
 
 # make a sprite group and bullet group
 astronaut_group = pygame.sprite.Group()
@@ -86,6 +92,8 @@ while running:
 
 # check for collision kill them
     kill_sprites(enemy_group, bullet_group, score,  num_enemies)
+
+    draw_score(screen, score)
 
 # Increase difficulty progressively based on score
     if score[0] % 5 == 0 and score[0] != 0:  # Every 5 points, increase difficulty
