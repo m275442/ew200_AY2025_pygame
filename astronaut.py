@@ -28,8 +28,8 @@ class Astronaut(pygame.sprite.Sprite):
         self.bullet_group = bullet_group
         # Shooting timers
         self.shoot_time = 0
-        self.shoot_wait = 500  # Time between shots (ms)
-        self.shoot_duration = 200  # Duration of shooting animation (ms)
+        self.shoot_wait = 200  # Time between shots (ms)
+        self.shoot_duration = 100  # Duration of shooting animation (ms)
         self.is_shooting = False
         # explosion stuff
         self.explosion_image = pygame.image.load('assets/explosion1.png')

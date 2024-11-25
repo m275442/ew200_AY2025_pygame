@@ -36,19 +36,21 @@ enemy1 = EnemyAstronaut(astronaut1,screen, 400,400, WIDTH, HEIGHT, bullet_group,
 astronaut_group.add(astronaut1) 
 enemy_group.add(enemy1)
 
-num_enemies = [1]
+num_enemies = [5]
 
 # spawn enemy function
 def spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group):
-    # check the number of ships, and spawn more as needed
-    # get the number of ships right now
+    # Get the current number of enemies
     n = len(enemy_group)
+    # Spawn enemies until the count matches the desired number
     for i in range(n, num_enemies[0]):
         x = randint(0, WIDTH)
         y = randint(0, 2 * TILESIZE)
         speed = randint(1, 5)
-        enemy = EnemyAstronaut(astronaut1, screen, x,y, speed,  WIDTH, HEIGHT, bullet_group, color='white')
+        enemy = EnemyAstronaut(astronaut1, screen, x, y, WIDTH, HEIGHT, bullet_group, color='white')
         enemy_group.add(enemy)
+
+spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group)
 
 
 while running:
@@ -82,8 +84,16 @@ while running:
     enemy_group.draw(screen)
     
 
-# check for ship collision kill them
+# check for collision kill them
     kill_sprites(enemy_group, bullet_group, score,  num_enemies)
+
+# Increase difficulty progressively based on score
+    if score[0] % 5 == 0 and score[0] != 0:  # Every 5 points, increase difficulty
+        num_enemies[0] += 1
+        score[0] += 1  # To prevent repeated increases for the same score
+        print(f"Increasing difficulty! New enemy count: {num_enemies[0]}")
+
+    spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group)
 
     # flip() the display to put your work on screen
     pygame.display.flip()

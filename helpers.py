@@ -43,7 +43,7 @@ def build_background(WIDTH, HEIGHT):
 background = build_background(1280,768)
 
 
-def kill_sprites(ship_group, bullet_group, score, num_ships):
+def kill_sprites(ship_group, bullet_group, score, num_enemies):
         # check for bullets hitting ships
     coll_dict = pygame.sprite.groupcollide(ship_group,bullet_group,0,0)
 
@@ -63,4 +63,4 @@ def kill_sprites(ship_group, bullet_group, score, num_ships):
                     score[0] += 1
                     # increase the number of spawned ships by chance
                     if randint(0,10)<3:
-                        num_ships[0]+=1
+                        num_enemies[0]+=1
