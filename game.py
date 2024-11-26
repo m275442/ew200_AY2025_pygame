@@ -4,6 +4,7 @@ from astronaut import Astronaut
 from enemy_astronaut import EnemyAstronaut
 from tower import Tower
 from random import randint
+from enemy_spawner import spawn_wave, draw_wave_info
 
 # pygame setup
 pygame.init()
@@ -50,20 +51,16 @@ tower = Tower(screen, WIDTH/2, HEIGHT - TILESIZE, WIDTH, HEIGHT)
 # add tower to group
 tower_group.add(tower)
 
-num_enemies = [5]
-# spawn enemy function
-def spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group):
-    # Get the current number of enemies
-    n = len(enemy_group)
-    # Spawn enemies until the count matches the desired number
-    for i in range(n, num_enemies[0]):
-        x = randint(0, WIDTH)
-        y = randint(0, TILESIZE)
-        speed = randint(1, 5)
-        enemy = EnemyAstronaut(astronaut1, screen, x, y, WIDTH, HEIGHT, bullet_group, color='white')
-        enemy_group.add(enemy)
 
-spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group)
+# Wave variables
+num_enemies = [5]
+current_wave = 1  # Start with wave 1
+time_between_waves = 10000  # 10 seconds between waves (in milliseconds)
+last_wave_time = pygame.time.get_ticks()  # Track the last wave time
+wave_active = False  # Whether the current wave is still active
+enemies_per_wave = 5  # Number of enemies in the first wave
+wave_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf', 48)
+
 
 
 while running:
@@ -78,6 +75,9 @@ while running:
 # Blit the background to the screen
     background = build_background(WIDTH,HEIGHT)
     screen.blit(background,(0,0))
+
+# wave info
+    draw_wave_info(screen,current_wave,WIDTH,wave_font)
 
 # update positions
     # update the astronaut's position
@@ -112,16 +112,29 @@ while running:
         # make each enemy that collides back up
         for enemy in collisions:
             enemy.back_up()
+
+# Check for collisions and reduce health
+    tower_collisions = pygame.sprite.spritecollide(tower, enemy_group, False, pygame.sprite.collide_mask)
+    if tower_collisions:
+        tower.take_damage(10)
+        for enemy in tower_collisions:
+            enemy.back_up()
+
     draw_score(screen, score)
 
-# Increase difficulty progressively based on score
-    # Progressive difficulty scaling
-    if score[0] % 5 == 0 and score[0] > last_difficulty_increase[0]:  
-        num_enemies[0] += 1
-        last_difficulty_increase[0] = score[0]
-        print(f"Increasing difficulty! New enemy count: {num_enemies[0]}")
+    # Wave-based spawning logic
+    if not wave_active and pygame.time.get_ticks() - last_wave_time > time_between_waves:
+        # Start a new wave
+        wave_active = True
+        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, screen, bullet_group, TILESIZE, enemies_per_wave=5)
+        print(f"Wave {current_wave} started with {current_wave * enemies_per_wave} enemies!")
 
-    spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group)
+    # Check if the wave is cleared
+    if wave_active and len(enemy_group) == 0:
+        wave_active = False
+        last_wave_time = pygame.time.get_ticks()  # Reset wave timer
+        current_wave += 1  # Increase wave count
+        print(f"Wave {current_wave - 1} cleared!")
 
     # flip() the display to put your work on screen
     pygame.display.flip()
