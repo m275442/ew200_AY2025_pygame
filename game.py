@@ -20,11 +20,17 @@ TILESIZE = grass.get_width()
 # make score
 score = [0]
 score_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf',48)
+# Create a variable to track the last score threshold for difficulty increase
+last_difficulty_increase = [0]
 
 # Render the score text
 def draw_score(screen, score):
     score_text = score_font.render(f"Score: {score[0]}", True, (255, 50, 50))  # red color
     screen.blit(score_text, (20, 20))  # Top-left corner of the screen
+
+# make health
+health = [20]
+health_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf',48)
 
 # make a sprite group and bullet group
 astronaut_group = pygame.sprite.Group()
@@ -51,7 +57,7 @@ def spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group):
     # Spawn enemies until the count matches the desired number
     for i in range(n, num_enemies[0]):
         x = randint(0, WIDTH)
-        y = randint(0, 2 * TILESIZE)
+        y = randint(0, TILESIZE)
         speed = randint(1, 5)
         enemy = EnemyAstronaut(astronaut1, screen, x, y, WIDTH, HEIGHT, bullet_group, color='white')
         enemy_group.add(enemy)
@@ -93,12 +99,21 @@ while running:
 # check for collision kill them
     kill_sprites(enemy_group, bullet_group, score,  num_enemies)
 
+# Check for collisions between the player and enemies
+    collisions = pygame.sprite.spritecollide(astronaut1, enemy_group, False, pygame.sprite.collide_mask)
+
+    if collisions:  # If any collisions occurred
+        astronaut1.take_damage(5)  # Reduce health by 5
+        # make each enemy that collides back up
+        for enemy in collisions:
+            enemy.back_up()
     draw_score(screen, score)
 
 # Increase difficulty progressively based on score
-    if score[0] % 5 == 0 and score[0] != 0:  # Every 5 points, increase difficulty
+    # Progressive difficulty scaling
+    if score[0] % 5 == 0 and score[0] > last_difficulty_increase[0]:  
         num_enemies[0] += 1
-        score[0] += 1  # To prevent repeated increases for the same score
+        last_difficulty_increase[0] = score[0]
         print(f"Increasing difficulty! New enemy count: {num_enemies[0]}")
 
     spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group)

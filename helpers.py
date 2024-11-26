@@ -32,8 +32,7 @@ def build_background(WIDTH, HEIGHT):
         background.blit(sand_edge, (i, TILE_SIZE))
     background.blit(sand_edge_right, ((WIDTH - TILE_SIZE), TILE_SIZE))
 
-    # Add tower
-    background.blit(tower_left, (2 * TILE_SIZE, 3 * TILE_SIZE))
+    
 
     # Add tree
     background.blit(small_tree, (TILE_SIZE, 2 * TILE_SIZE))

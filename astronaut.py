@@ -18,9 +18,19 @@ class Astronaut(pygame.sprite.Sprite):
             self.orig_image = pygame.image.load('assets/spaceAstronauts_004.png')
             self.orig_image2 = pygame.image.load('assets/spaceAstronauts_005.png') # image with hands out
             self.orig_image3 = pygame.image.load('assets/spaceAstronauts_006.png') # shooting
+
+            self.health = 100  # Health starts at 100
+            self.max_health = 100  # Maximum health
         else:
             self.orig_image2 = pygame.image.load('assets/spaceAstronauts_007.png')
             self.orig_image = pygame.image.load('assets/spaceAstronauts_008.png')
+
+            self.health = 5  # Health starts at 5 for enemies
+            self.max_health = 5  # Maximum health
+
+        self.health_bar_length = 100  # Length of health bar in pixels
+        self.health_bar_height = 10  # Height of health bar
+        self.health_bar_offset = -30  # Offset from the top of the astronaut sprite
         self.image = self.orig_image # keep orig image to never be rotated
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -37,7 +47,34 @@ class Astronaut(pygame.sprite.Sprite):
         self.explosion_timer = 0
         self.explosion_length = 500
         self.mask = pygame.mask.from_surface(self.image)
-    
+        # damage stuff
+        self.last_hit_time = 0
+        self.hit_cooldown = 300
+        
+    def draw_health_bar(self):
+        # Calculate the health bar position and size
+        bar_length = (self.health / self.max_health) * self.health_bar_length
+        bar_x = self.rect.centerx - self.health_bar_length // 2
+        bar_y = self.rect.top + self.health_bar_offset
+
+        # Draw the health bar background (red for lost health)
+        pygame.draw.rect(self.screen, (255, 0, 0), (bar_x, bar_y, self.health_bar_length, self.health_bar_height))
+
+        # Draw the current health (green)
+        pygame.draw.rect(self.screen, (0, 255, 0), (bar_x, bar_y, bar_length, self.health_bar_height))
+
+    def take_damage(self,damage):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_hit_time > self.hit_cooldown:
+            self.health -= damage
+            self.last_hit_time = current_time
+            if self.health <= 0:
+                self.health = 0
+                self.die()
+
+    def die(self):
+        self.kill()
+
     def deg_to_rad(self, deg):
         # converts deg to rad
         rad = (deg/180) * pi
@@ -162,6 +199,9 @@ class Astronaut(pygame.sprite.Sprite):
 
 
         self.rect = self.image.get_rect(center=(self.x, self.y))
+
+        # draw health bar
+        self.draw_health_bar()
 
         # check border
         self.check_border()
