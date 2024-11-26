@@ -44,8 +44,8 @@ class EnemyAstronaut(Astronaut):
         direction_y = -sin(angle_rad)  # Opposite direction
 
         # Adjust the position of the enemy
-        self.x += direction_x * 10  # The 10 is the distance to back up; adjust as needed
-        self.y += direction_y * 10
+        self.x += direction_x * 20  # The 10 is the distance to back up; adjust as needed
+        self.y += direction_y * 20
 
         # Update the rectangle position
         self.rect.center = (self.x, self.y)

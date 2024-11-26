@@ -2,6 +2,7 @@ import pygame
 from helpers import build_background, kill_sprites
 from astronaut import Astronaut
 from enemy_astronaut import EnemyAstronaut
+from tower import Tower
 from random import randint
 
 # pygame setup
@@ -37,19 +38,19 @@ astronaut_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 all_astronauts_group = pygame.sprite.Group()
+tower_group = pygame.sprite.Group()
 
 # make player1 
 astronaut1 = Astronaut(screen, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT, bullet_group)
-
-# make an enemy astronaut
-enemy1 = EnemyAstronaut(astronaut1,screen, 400,400, WIDTH, HEIGHT, bullet_group, color='white')
-
 # add player1 to group
 astronaut_group.add(astronaut1) 
-enemy_group.add(enemy1)
+
+# make tower
+tower = Tower(screen, WIDTH/2, HEIGHT - TILESIZE, WIDTH, HEIGHT)
+# add tower to group
+tower_group.add(tower)
 
 num_enemies = [5]
-
 # spawn enemy function
 def spawn_enemies(WIDTH, HEIGHT, num_enemies, enemy_group):
     # Get the current number of enemies
@@ -85,6 +86,8 @@ while running:
     enemy_group.update()
     # update bullet position
     bullet_group.update()
+    # update tower health
+    tower_group.update()
 
 
 # draw sprites
@@ -94,6 +97,8 @@ while running:
     bullet_group.draw(screen)
     # draw enemies
     enemy_group.draw(screen)
+    # draw tower
+    tower_group.draw(screen)
     
 
 # check for collision kill them
