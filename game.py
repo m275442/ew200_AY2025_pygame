@@ -55,7 +55,7 @@ tower_group.add(tower)
 # Wave variables
 num_enemies = [5]
 current_wave = 1  # Start with wave 1
-time_between_waves = 10000  # 10 seconds between waves (in milliseconds)
+time_between_waves = 2000 # 10 seconds between waves (in milliseconds)
 last_wave_time = pygame.time.get_ticks()  # Track the last wave time
 wave_active = False  # Whether the current wave is still active
 enemies_per_wave = 5  # Number of enemies in the first wave
