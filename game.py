@@ -126,7 +126,7 @@ while running:
     if not wave_active and pygame.time.get_ticks() - last_wave_time > time_between_waves:
         # Start a new wave
         wave_active = True
-        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, screen, bullet_group, TILESIZE, enemies_per_wave=5)
+        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, tower, screen, bullet_group, TILESIZE, enemies_per_wave=5)
         print(f"Wave {current_wave} started with {current_wave * enemies_per_wave} enemies!")
 
     # Check if the wave is cleared
