@@ -5,13 +5,19 @@ from astronaut import Astronaut
 
 
 class EnemyAstronaut(Astronaut):
-    def __init__(self, player, tower, screen, x, y, WIDTH, HEIGHT, bullet_group, theta=270, color='white'):
+    def __init__(self, player, tower, screen, x, y, WIDTH, HEIGHT, bullet_group, theta=270, color='white', health=50):
         super().__init__(screen, x, y, WIDTH, HEIGHT, bullet_group, theta, color)
         self.player = player
         self.tower = tower
+        self.health = health
         self.is_moving = False
         self.is_shooting = False
         self.attack_target = tower # default to attacking the tower instead of the player
+        # health bar stuff
+        self.health_bar_length = 100  # Length of health bar in pixels
+        self.health_bar_height = 10  # Height of health bar
+        self.health_bar_offset = -30  # Offset from the top of the astronaut sprite
+        self.max_health = health
 
     def track_player(self):
          # Calculate distance to the player and the tower
@@ -19,7 +25,7 @@ class EnemyAstronaut(Astronaut):
         tower_distance = math.sqrt((self.tower.x - self.x)**2 + (self.tower.y - self.y)**2)
 
         # make enemy attack player only within certain radius
-        if player_distance < 200:  # Example: prioritize tower if within 200 pixels
+        if player_distance < 150:  # prioritize player if within 200 pixels
             self.attack_target = self.player
         else:
             self.attack_target = self.tower
@@ -61,3 +67,24 @@ class EnemyAstronaut(Astronaut):
 
         # Update the rectangle position
         self.rect.center = (self.x, self.y)
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.die()
+
+    def draw_health_bar(self):
+        if self.max_health <= 0:  # Avoid division by zero
+            return
+        bar_length = max(0, (self.health / self.max_health) * self.health_bar_length)  # Prevent negative length
+        bar_x = self.rect.centerx - self.health_bar_length // 2
+        bar_y = self.rect.top + self.health_bar_offset
+
+        # Draw the health bar background (red for lost health)
+        pygame.draw.rect(self.screen, (255, 0, 0), (bar_x, bar_y, self.health_bar_length, self.health_bar_height))
+        # Draw the current health (green)
+        pygame.draw.rect(self.screen, (0, 255, 0), (bar_x, bar_y, bar_length, self.health_bar_height))
+
+    def update(self):
+        super().update()
+        self.draw_health_bar()

@@ -27,7 +27,7 @@ class Astronaut(pygame.sprite.Sprite):
 
             self.health = 5  # Health starts at 5 for enemies
             self.max_health = 5  # Maximum health
-
+        # health bar stuff
         self.health_bar_length = 100  # Length of health bar in pixels
         self.health_bar_height = 10  # Height of health bar
         self.health_bar_offset = -30  # Offset from the top of the astronaut sprite
@@ -49,7 +49,7 @@ class Astronaut(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         # damage stuff
         self.last_hit_time = 0
-        self.hit_cooldown = 300
+        self.hit_cooldown = 200
         
     def draw_health_bar(self):
         # Calculate the health bar position and size
