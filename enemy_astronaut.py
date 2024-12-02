@@ -5,7 +5,7 @@ from astronaut import Astronaut
 
 
 class EnemyAstronaut(Astronaut):
-    def __init__(self, player, tower, screen, x, y, WIDTH, HEIGHT, bullet_group, theta=270, color='white', health=50):
+    def __init__(self, player, tower, screen, x, y, WIDTH, HEIGHT, bullet_group, theta=270, color='white', health=50, damage=5):
         super().__init__(screen, x, y, WIDTH, HEIGHT, bullet_group, theta, color)
         self.player = player
         self.tower = tower
@@ -18,6 +18,7 @@ class EnemyAstronaut(Astronaut):
         self.health_bar_height = 10  # Height of health bar
         self.health_bar_offset = -30  # Offset from the top of the astronaut sprite
         self.max_health = health
+        self.damage = damage  # Damage inflicted by this enemy (starts at 5)
 
     def track_player(self):
          # Calculate distance to the player and the tower
@@ -84,6 +85,13 @@ class EnemyAstronaut(Astronaut):
         pygame.draw.rect(self.screen, (255, 0, 0), (bar_x, bar_y, self.health_bar_length, self.health_bar_height))
         # Draw the current health (green)
         pygame.draw.rect(self.screen, (0, 255, 0), (bar_x, bar_y, bar_length, self.health_bar_height))
+
+    def attack(self):
+        # Damage the target (player or tower)
+        if self.attack_target == self.tower:
+            self.tower.take_damage(self.damage)
+        elif self.attack_target == self.player:
+            self.player.take_damage(self.damage)
 
     def update(self):
         super().update()
