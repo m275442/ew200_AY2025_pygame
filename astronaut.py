@@ -208,4 +208,3 @@ class Astronaut(pygame.sprite.Sprite):
 
         # check border
         self.check_border()
-

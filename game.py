@@ -6,6 +6,9 @@ from tower import Tower
 from random import randint
 from enemy_spawner import spawn_wave, draw_wave_info
 from upgrade import show_upgrade_menu
+from math import ceil
+from instruction_screen import draw_instructions, instruction_screen
+from game_over import show_game_over
 
 # pygame setup
 pygame.init()
@@ -22,7 +25,7 @@ grass = pygame.image.load('assets/tile_39.png')
 TILESIZE = grass.get_width()
 
 # load background music
-pygame.mixer.music.load('assets/background_music.mp3')
+pygame.mixer.music.load('assets/backgroud_music.mp3')
 pygame.mixer.music.play(-1, 0.0)  # Play background music in a loop
 
 # make score
@@ -37,6 +40,8 @@ def draw_score(screen, score):
 # make health
 health = [20]
 health_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf',48)
+damage_upgrade = 15
+collision_damage = 30
 
 # make a sprite group and bullet group
 astronaut_group = pygame.sprite.Group()
@@ -64,85 +69,83 @@ last_wave_time = pygame.time.get_ticks()  # Track the last wave time
 wave_active = False  # Whether the current wave is still active
 wave_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf', 48)
 
+# Show instruction screen before the main game
+instruction_screen()
 
 
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
+    # Poll for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.QUIT:
-            running = False
-    
-# Blit the background to the screen
-    background = build_background(WIDTH,HEIGHT)
-    screen.blit(background,(0,0))
 
-# wave info
-    draw_wave_info(screen,current_wave,WIDTH,wave_font)
+    # Blit the background to the screen
+    background = build_background(WIDTH, HEIGHT)
+    screen.blit(background, (0, 0))
 
-# update positions
-    # update the astronaut's position
+    # Wave info and sprite updates
+    draw_wave_info(screen, current_wave, WIDTH, wave_font)
     astronaut_group.update()
-    # update enemy position
     enemy_group.update()
-    # update bullet position
     bullet_group.update()
-    # update tower health
     tower_group.update()
 
-
-# draw sprites
-    # draw the ship
+    # Draw sprites
     astronaut_group.draw(screen)
-    # draw bullets
     bullet_group.draw(screen)
-    # draw enemies
     enemy_group.draw(screen)
-    # draw tower
     tower_group.draw(screen)
-    
 
-# check for collision kill them
-    kill_sprites(enemy_group, bullet_group, score,  num_enemies, astronaut1.damage)
+    # Check for collision kill them
+    kill_sprites(enemy_group, bullet_group, score, num_enemies, astronaut1.damage)
 
-# Check for collisions between the player and enemies
+    # Check for collisions between the player and enemies
     collisions = pygame.sprite.spritecollide(astronaut1, enemy_group, False, pygame.sprite.collide_mask)
 
     if collisions:  # If any collisions occurred
         for enemy in collisions:
             astronaut1.take_damage(enemy.damage)  # Reduce health by the individual enemy's damage attribute
             enemy.back_up()  # Make the enemy back up after collision
+            enemy.take_damage(collision_damage)
 
-
-# Check for collisions and reduce health
+    # Check for collisions and reduce health
     tower_collisions = pygame.sprite.spritecollide(tower, enemy_group, False, pygame.sprite.collide_mask)
     if tower_collisions:
-        tower.take_damage(10)
         for enemy in tower_collisions:
+            tower.take_damage(enemy.damage)
             enemy.back_up()
 
     draw_score(screen, score)
 
-     # Wave-based spawning logic
+    # Check if the player has died (health <= 0)
+    if astronaut1.health <= 0:
+        astronaut1.die()
+        pygame.time.wait(500)
+        show_game_over(screen, "You've been infected...")
+        running = False  # Stop the game loop
+
+    # Check if the tower has died (health <= 0)
+    if tower.health <= 0:
+        tower.die()
+        pygame.time.wait(500)
+        show_game_over(screen, "Your ship has been destroyed")
+        running = False  # Stop the game loop
+
+    # Wave handling logic
     if not wave_active and pygame.time.get_ticks() - last_wave_time > time_between_waves:
         # Show upgrade menu every 5 waves
-        print(f"Current wave before upgrade check: {current_wave}")
-        if current_wave % 2 == 0 and current_wave > 0:
+        if current_wave % 5 == 0 and current_wave > 0:
             print(f"Wave {current_wave}: Showing upgrade menu.")  # Debug log
             show_upgrade_menu(
                 screen, WIDTH, HEIGHT, astronaut1, tower,
                 player_health_upgrade=20,
-                player_damage_upgrade=5,
+                player_damage_upgrade=damage_upgrade + current_wave,
                 tower_health_upgrade=50
             )
 
         # Start a new wave after the menu
         wave_active = True
-        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, tower, screen, bullet_group, TILESIZE, enemies_per_wave=current_wave * 3)
-
-
+        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, tower, screen, bullet_group, TILESIZE, enemies_per_wave=num_enemies)
 
     # Check if the wave is cleared
     if wave_active and len(enemy_group) == 0:
@@ -151,9 +154,8 @@ while running:
         current_wave += 1  # Increase wave count
         print(f"Wave {current_wave - 1} cleared!")
 
-    # flip() the display to put your work on screen
+    # Update the display
     pygame.display.flip()
-
-    clock.tick(60)  # limits FPS to 60
+    clock.tick(60)  # Limit FPS
 
 pygame.quit()
