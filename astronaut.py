@@ -50,7 +50,8 @@ class Astronaut(pygame.sprite.Sprite):
         # damage stuff
         self.last_hit_time = 0
         self.hit_cooldown = 200
-        
+        self.damage = 10
+
     def draw_health_bar(self):
         # Calculate the health bar position and size
         bar_length = (self.health / self.max_health) * self.health_bar_length

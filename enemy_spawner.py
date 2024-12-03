@@ -10,7 +10,7 @@ def spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, tower, scre
         y = randint(0, TILESIZE)
         # Increase damage with wave (e.g., base damage + 2 per wave)
         damage = 5 + (current_wave * 2)
-        health = 50 + (current_wave * 5)  # increase health too
+        health = 50 + (current_wave *2)  # increase health too
         enemy = EnemyAstronaut(astronaut1, tower, screen, x, y, WIDTH, HEIGHT, bullet_group, color='white',health=health, damage=damage)
         enemy_group.add(enemy)
 

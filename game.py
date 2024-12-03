@@ -5,6 +5,7 @@ from enemy_astronaut import EnemyAstronaut
 from tower import Tower
 from random import randint
 from enemy_spawner import spawn_wave, draw_wave_info
+from upgrade import show_upgrade_menu
 
 # pygame setup
 pygame.init()
@@ -22,8 +23,6 @@ TILESIZE = grass.get_width()
 # make score
 score = [0]
 score_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf',48)
-# Create a variable to track the last score threshold for difficulty increase
-last_difficulty_increase = [0]
 
 # Render the score text
 def draw_score(screen, score):
@@ -55,10 +54,9 @@ tower_group.add(tower)
 # Wave variables
 num_enemies = [5]
 current_wave = 1  # Start with wave 1
-time_between_waves = 2000 # 10 seconds between waves (in milliseconds)
+time_between_waves = 2000 # 2 seconds between waves (in milliseconds)
 last_wave_time = pygame.time.get_ticks()  # Track the last wave time
 wave_active = False  # Whether the current wave is still active
-enemies_per_wave = 5  # Number of enemies in the first wave
 wave_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf', 48)
 
 
@@ -122,12 +120,27 @@ while running:
 
     draw_score(screen, score)
 
-    # Wave-based spawning logic
+     # Wave-based spawning logic
     if not wave_active and pygame.time.get_ticks() - last_wave_time > time_between_waves:
-        # Start a new wave
+        # Show upgrade menu every 5 waves
+        print(f"Current wave before upgrade check: {current_wave}")
+        if current_wave % 2 == 0 and current_wave > 0:
+            print(f"Wave {current_wave}: Showing upgrade menu.")  # Debug log
+            show_upgrade_menu(
+                screen, WIDTH, HEIGHT, astronaut1, tower,
+                player_health_upgrade=20,
+                player_damage_upgrade=5,
+                tower_health_upgrade=50
+            )
+
+        # Start a new wave after the menu
         wave_active = True
-        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, tower, screen, bullet_group, TILESIZE, enemies_per_wave=5)
-        print(f"Wave {current_wave} started with {current_wave * enemies_per_wave} enemies!")
+        spawn_wave(
+            current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, screen, bullet_group, TILESIZE,
+            enemies_per_wave=current_wave * 5
+        )
+
+
 
     # Check if the wave is cleared
     if wave_active and len(enemy_group) == 0:
