@@ -9,6 +9,7 @@ from upgrade import show_upgrade_menu
 
 # pygame setup
 pygame.init()
+pygame.mixer.init()  # Initialize the mixer for sound
 clock = pygame.time.Clock()
 running = True
 WIDTH = 1280
@@ -19,6 +20,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 background = build_background(WIDTH,HEIGHT)
 grass = pygame.image.load('assets/tile_39.png')
 TILESIZE = grass.get_width()
+
+# load background music
+pygame.mixer.music.load('assets/background_music.mp3')
+pygame.mixer.music.play(-1, 0.0)  # Play background music in a loop
 
 # make score
 score = [0]
@@ -100,16 +105,16 @@ while running:
     
 
 # check for collision kill them
-    kill_sprites(enemy_group, bullet_group, score,  num_enemies)
+    kill_sprites(enemy_group, bullet_group, score,  num_enemies, astronaut1.damage)
 
 # Check for collisions between the player and enemies
     collisions = pygame.sprite.spritecollide(astronaut1, enemy_group, False, pygame.sprite.collide_mask)
 
     if collisions:  # If any collisions occurred
-        astronaut1.take_damage(5)  # Reduce health by 5
-        # make each enemy that collides back up
         for enemy in collisions:
-            enemy.back_up()
+            astronaut1.take_damage(enemy.damage)  # Reduce health by the individual enemy's damage attribute
+            enemy.back_up()  # Make the enemy back up after collision
+
 
 # Check for collisions and reduce health
     tower_collisions = pygame.sprite.spritecollide(tower, enemy_group, False, pygame.sprite.collide_mask)

@@ -42,7 +42,7 @@ def build_background(WIDTH, HEIGHT):
 background = build_background(1280,768)
 
 
-def kill_sprites(astronaut_group, bullet_group, score, num_enemies):
+def kill_sprites(astronaut_group, bullet_group, score, num_enemies, player_damage):
         # check for bullets hitting enemies
     coll_dict = pygame.sprite.groupcollide(astronaut_group,bullet_group,0,0)
 
@@ -56,7 +56,7 @@ def kill_sprites(astronaut_group, bullet_group, score, num_enemies):
                 # check if bullet.mom is the player
                 if b.mom != enemy:
                     # kill the astronaut
-                    enemy.take_damage(10)
+                    enemy.take_damage(player_damage)
                     if enemy.health <= 0:  # If health drops to zero, kill the ship
                         enemy.kill()
                         score[0] += 1

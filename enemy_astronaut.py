@@ -18,7 +18,7 @@ class EnemyAstronaut(Astronaut):
         self.health_bar_height = 10  # Height of health bar
         self.health_bar_offset = -30  # Offset from the top of the astronaut sprite
         self.max_health = health
-        self.damage = damage  # Damage inflicted by this enemy (starts at 5)
+        self.damage = damage  # Damage inflicted by this enemy (can be upgraded)
 
     def track_player(self):
          # Calculate distance to the player and the tower
