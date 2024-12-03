@@ -56,7 +56,7 @@ def kill_sprites(astronaut_group, bullet_group, score, num_enemies):
                 # check if bullet.mom is the player
                 if b.mom != enemy:
                     # kill the astronaut
-                    enemy.take_damage(100)
+                    enemy.take_damage(10)
                     if enemy.health <= 0:  # If health drops to zero, kill the ship
                         enemy.kill()
                         score[0] += 1

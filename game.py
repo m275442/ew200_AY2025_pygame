@@ -135,10 +135,7 @@ while running:
 
         # Start a new wave after the menu
         wave_active = True
-        spawn_wave(
-            current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, screen, bullet_group, TILESIZE,
-            enemies_per_wave=current_wave * 5
-        )
+        spawn_wave(current_wave, WIDTH, HEIGHT, enemy_group, astronaut1, tower, screen, bullet_group, TILESIZE, enemies_per_wave=current_wave * 3)
 
 
 

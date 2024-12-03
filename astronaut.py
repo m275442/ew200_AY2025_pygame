@@ -2,6 +2,7 @@ import pygame
 import math
 from bullet import Bullet
 from math import cos, sin, pi, radians
+pygame.mixer.init()
 
 class Astronaut(pygame.sprite.Sprite):
     def __init__(self, screen, x,y, WIDTH, HEIGHT, bullet_group, theta=0,color='black'):
@@ -41,6 +42,7 @@ class Astronaut(pygame.sprite.Sprite):
         self.shoot_wait = 200  # Time between shots (ms)
         self.shoot_duration = 100  # Duration of shooting animation (ms)
         self.is_shooting = False
+        self.shoot_sound = pygame.mixer.Sound('assets/shoot.ogg')
         # explosion stuff
         self.explosion_image = pygame.image.load('assets/explosion1.png')
         self.explosion_image = pygame.transform.scale_by(self.explosion_image, 6)
@@ -147,8 +149,8 @@ class Astronaut(pygame.sprite.Sprite):
             # we are allowed to shoot now
             self.is_shooting = True
             self.shoot_time = pygame.time.get_ticks()
-            
-            # if we have waited long enough, then make bullet
+            # play the shoot sound
+            self.shoot_sound.play()
 
             # offset so it shoots from astronaut gun 
              # Offset the bullet's spawn position

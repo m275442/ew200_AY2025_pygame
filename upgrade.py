@@ -1,45 +1,51 @@
 import pygame
 
-def show_upgrade_menu(screen, width, height, player, tower, player_health_upgrade, player_damage_upgrade, tower_health_upgrade):
-    print("Upgrade menu triggered!")  # This will help confirm it's being called
-    upgrade_active = True
-    font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf', 36)
-    options = [
-        f"1. Increase Player Health (+{player_health_upgrade})",
-        f"2. Increase Player Damage (+{player_damage_upgrade})",
-        f"3. Increase Tower Health (+{tower_health_upgrade})"
-    ]
-    selected_option = 0
+def show_upgrade_menu(screen, WIDTH, HEIGHT, astronaut, tower, player_health_upgrade, player_damage_upgrade, tower_health_upgrade):
+    # Create upgrade menu (you can adjust this based on your UI design)
+    menu_font = pygame.font.Font('assets/Exo2-VariableFont_wght.ttf', 36)
+    menu_bg = pygame.Surface((WIDTH, HEIGHT))
+    menu_bg.fill((0, 0, 0))  # Black background
+    menu_bg.set_alpha(150)  # Make it semi-transparent
+    screen.blit(menu_bg, (0, 0))
 
-    while upgrade_active:
-        # Render the upgrade menu
-        screen.fill((0, 0, 0))  # Black background
-        title_text = font.render("Choose an Upgrade:", True, (255, 255, 255))
-        screen.blit(title_text, (width // 2 - title_text.get_width() // 2, 100))
+    # Render instruction text at the top
+    instruction_text = menu_font.render("Please click an upgrade with your mouse", True, (255, 255, 255))
+    screen.blit(instruction_text, (WIDTH//2 - instruction_text.get_width()//2, 50))  # Top center of the screen
+    
+    # Draw menu text
+    health_text = menu_font.render(f"Heal Yourself (+{player_health_upgrade})", True, (255, 255, 255))
+    damage_text = menu_font.render(f"Upgrade Damage (+{player_damage_upgrade})", True, (255, 255, 255))
+    tower_health_text = menu_font.render(f"Heal the Tower (+{tower_health_upgrade})", True, (255, 255, 255))
+    
+    screen.blit(health_text, (WIDTH//2 - health_text.get_width()//2, HEIGHT//2 - 100))
+    screen.blit(damage_text, (WIDTH//2 - damage_text.get_width()//2, HEIGHT//2))
+    screen.blit(tower_health_text, (WIDTH//2 - tower_health_text.get_width()//2, HEIGHT//2 + 100))
+    
+    pygame.display.flip()
 
-        for i, option in enumerate(options):
-            color = (255, 255, 0) if i == selected_option else (255, 255, 255)
-            option_text = font.render(option, True, color)
-            screen.blit(option_text, (width // 2 - option_text.get_width() // 2, 200 + i * 50))
-
-        pygame.display.flip()
-
-        # Handle user input
+    # Wait for player input to close the menu (like pressing a key or clicking)
+    menu_active = True
+    while menu_active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    selected_option = (selected_option - 1) % len(options)
-                elif event.key == pygame.K_DOWN:
-                    selected_option = (selected_option + 1) % len(options)
-                elif event.key == pygame.K_RETURN:
-                    # Apply the selected upgrade
-                    if selected_option == 0:
-                        player.health += player_health_upgrade
-                    elif selected_option == 1:
-                        player.damage += player_damage_upgrade
-                    elif selected_option == 2:
-                        tower.health += tower_health_upgrade
-                    upgrade_active = False
+                quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                # Check if player clicks on one of the buttons to upgrade
+                if (WIDTH//2 - health_text.get_width()//2 <= mouse_x <= WIDTH//2 + health_text.get_width()//2 and
+                    HEIGHT//2 - 100 <= mouse_y <= HEIGHT//2 - 100 + health_text.get_height()):
+                    astronaut.health += player_health_upgrade
+                elif (WIDTH//2 - damage_text.get_width()//2 <= mouse_x <= WIDTH//2 + damage_text.get_width()//2 and
+                    HEIGHT//2 - 100 <= mouse_y <= HEIGHT//2 - 100 + damage_text.get_height()):
+                    astronaut.damage += player_damage_upgrade
+                elif (WIDTH//2 - tower_health_text.get_width()//2 <= mouse_x <= WIDTH//2 + tower_health_text.get_width()//2 and
+                    HEIGHT//2 - 100 <= mouse_y <= HEIGHT//2 - 100 + tower_health_text.get_height()):
+                    tower.health += tower_health_upgrade
+                menu_active = False  # Close the menu after upgrading
+                
+                # Similar checks can be done for the other upgrade buttons
+                
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # Press Escape to close the menu
+                    menu_active = False  # Close the menu when Escape is pressed
